@@ -1,8 +1,26 @@
 import json
 
+def handle_special_category_format(cat):
+    try:
+        parts = cat.rsplit('[', 1)
+        name = parts[0].strip()
+        id_str = parts[1].strip(']')
+        return {"name": name, "id": int(id_str)}
+    except (IndexError, ValueError):
+        return {"name": cat, "id": None}
+
 def parse_category_line(line):
     categories = line.strip().split('|')[1:]
-    return [{cat.strip(']').split('[')[1]: cat.strip(']').split('[')[0]} for cat in categories]
+    parsed_categories = []
+
+    for cat in categories:
+        try:
+            name, id_str = cat.strip(']').split('[')
+            parsed_categories.append({"name": name, "id": int(id_str)})
+        except ValueError:
+            parsed_categories.append(handle_special_category_format(cat))
+
+    return parsed_categories
 
 def parse_review_line(line):
     data = line.strip().split()
@@ -14,7 +32,7 @@ def parse_review_line(line):
         'helpful': int(data[8])
     }
 
-def parser_products(file_path, output_path):
+def parse_products(file_path, output_path="output.json"):
     products = []
     product = {}
 
@@ -26,7 +44,6 @@ def parser_products(file_path, output_path):
 
             if line.startswith("Id:"):
                 if product:
-                    # De-duplicate categories
                     if 'categories' in product:
                         unique_categories = {tuple(d.items()): d for d in product['categories']}
                         product['categories'] = list(unique_categories.values())
@@ -49,7 +66,6 @@ def parser_products(file_path, output_path):
             elif line.startswith("    "):
                 product['reviews'].append(parse_review_line(line))
 
-    # Process last product
     if product:
         if 'categories' in product:
             unique_categories = {tuple(d.items()): d for d in product['categories']}

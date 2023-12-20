@@ -1,22 +1,25 @@
 import psycopg2
 from psycopg2 import OperationalError
 import configparser
+from commands_sql import SQLC
 
 FALHA_CONEXAO = "ERRO AO CONECTAR AO BANCO DE DADOS"
 SUCESSO_CONEXAO = "SUCESSO AO CONECTAR AO BANCO DE DADOS"
 SUCESSO_CRIAR_BANCO = "SUCESSO AO CRIAR BANCO DE DADOS"
 
-def create_connection():
+def create_connection(autocommit = False, database_name='postgres'):
     config = configparser.ConfigParser()
     config.read('db_config.ini')
 
     try:
         connection = psycopg2.connect(
             host=config['database']['host'],
-            database=config['database']['dbname'],
+            database= database_name,
             user=config['database']['user'],
             password=config['database']['password']
         )
+
+        connection.autocommit = autocommit
 
         cursor = connection.cursor()        
         cursor.execute("SELECT version();")
@@ -31,20 +34,36 @@ def create_database(connection, database_name):
         return
     
     try:
-        COMANDO_SQL = "CREATE DATABASE {}".format(database_name)
+        COMANDO_SQL = SQLC.CRIAR_TABELA.format(database_name)
 
         cursor = connection[1].cursor()
-        
-        connection[1].autocommit = True
         cursor.execute(COMANDO_SQL)
-        connection[1].autocommit = False
         cursor.close()
 
         return SUCESSO_CRIAR_BANCO
     except OperationalError as e:
         return FALHA_CONEXAO, str(e)
+    finally:
+        connection[1].close()
 
-connection = create_connection()
-create_database(connection, "tp1_test")
+def create_tables(connection):
+    if (connection[0] == FALHA_CONEXAO):
+        return
+    
+    try:
+        cursor = connection[1].cursor()
+        
+        cursor.execute(SQLC.TABELA_PRODUTO)
+        cursor.execute(SQLC.TABELA_SIMILAR)
+        cursor.execute(SQLC.TABELA_CATEGORIAS)
+        cursor.execute(SQLC.TABELA_P_CATEGORIA)
+        cursor.execute(SQLC.TABELA_AVALIACOES)
 
-connection[1].close()
+        cursor.close()
+        connection[1].commit()
+
+        return SUCESSO_CRIAR_BANCO
+    except OperationalError as e:
+        return FALHA_CONEXAO, str(e)
+    finally:
+        connection[1].close()
