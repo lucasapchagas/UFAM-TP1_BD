@@ -50,6 +50,9 @@ class SQLC:
     );
     """
 
+    INSERE_PRODUTO_CATEGORIAS = """INSERT INTO produto_categorias(asin, categoria_id)
+    VALUES (14ASN12, 161616);"""
+
 # Classe com as query SQL para a dashboard do programa
 class SQLD:
     pass
