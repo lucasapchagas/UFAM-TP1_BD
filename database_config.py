@@ -2,6 +2,7 @@ import psycopg2
 from psycopg2 import OperationalError
 import configparser
 from commands_sql import SQLC
+from read_file import parse_products
 
 FALHA_CONEXAO = "ERRO AO CONECTAR AO BANCO DE DADOS"
 SUCESSO_CONEXAO = "SUCESSO AO CONECTAR AO BANCO DE DADOS"
@@ -71,23 +72,39 @@ def create_tables(connection):
     finally:
         connection[1].close()
 
-def insere_dados(connection):
+def insert_data(connection, products):
     if (connection[0] == FALHA_CONEXAO):
         return
     try:
-        cursor = connection[1].cursor()
-        cursor.execute(SQLC.INSERE_PRODUTO_CATEGORIAS)
 
+        cursor = connection[1].cursor()
+        """ cursor.execute(SQLC.INSERE_PRODUTO.format(('743AB','titulo','grupies',45)))
+        cursor.execute(SQLC.INSERE_CATEGORIAS.format((12,'SANTOS')))
+        cursor.execute(SQLC.INSERE_PRODUTO_CATEGORIA.format(('743AB',12))) """
+        for i in range(len(products)):
+            
+            actual_product = products[i]
+            
+            cursor.execute(SQLC.INSERE_PRODUTO,(actual_product['asin'],actual_product['title'],actual_product['group'],actual_product['salesrank']))
+            #TBD
+            """ cursor.execute(SQLC.INSERE_CATEGORIAS,(actual_product[]))
+            cursor.execute(SQLC.INSERE_PRODUTO_CATEGORIA,())
+            cursor.execute(SQLC.INSERE_PRODUTO_SIMILAR,())
+            cursor.execute(SQLC.INSERE_AVALIACOES,()) """
+            
         cursor.close()
-        connection[1].commit()
 
         return SUCESSO_CRIAR_BANCO
     except OperationalError as e:
         return FALHA_CONEXAO, str(e)
     finally:
         connection[1].close()
-#teste = create_connection()
-#create_database(teste,"teste1")
+
+#test program        
+teste = create_connection()
+create_database(teste,"teste1")
 teste = create_connection(False,"teste1")
-#create_tables(teste)
-insere_dados(teste)
+create_tables(teste)
+teste = create_connection(False,"teste1")
+products = parse_products("amazon-meta-sample.txt")
+insert_data(teste, products)

@@ -55,6 +55,8 @@ def parse_products(file_path, output_path="output.json"):
                 product['title'] = line[len("  title:"):].strip()
             elif line.startswith("  group:"):
                 product['group'] = line[len("  group:"):].strip()
+            elif line.startswith("  salesrank:"):
+                product['salesrank'] = int(line.split()[1])
             elif line.startswith("  similar:"):
                 product['similar'] = line.split()[2:]
             elif line.startswith("  categories:"):

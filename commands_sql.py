@@ -50,8 +50,16 @@ class SQLC:
     );
     """
 
-    INSERE_PRODUTO_CATEGORIAS = """INSERT INTO produto_categorias(asin, categoria_id)
-    VALUES (14ASN12, 161616);"""
+    INSERE_PRODUTO_CATEGORIA = """INSERT INTO produto_categoria(asin, categoria_id)
+    VALUES (%s,%s);"""
+
+    INSERE_PRODUTO_SIMILAR = """INSERT INTO produto_similar(asin, asin_similar) VALUES (%s, %s);"""
+
+    INSERE_CATEGORIAS = """INSERT INTO categorias(categoria_id, categoria_nome) VALUES (%s,%s);"""
+
+    INSERE_AVALIACOES = """INSERT INTO avaliacoes(avaliacao_id, asin, data, id_usuario, nota, votos, votos_util) VALUES (%s,%s,%s,%s,%s,%s,%s);"""
+
+    INSERE_PRODUTO = """INSERT INTO produto(asin, titulo, grupo, rank_vendas) VALUES (%s,%s,%s,%s);"""
 
 # Classe com as query SQL para a dashboard do programa
 class SQLD:
