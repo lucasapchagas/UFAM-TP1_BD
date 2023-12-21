@@ -41,7 +41,7 @@ class SQLC:
         avaliacao_id integer NOT NULL,
         asin character varying(15) NOT NULL,
         data date NOT NULL,
-        id_usuario integer NOT NULL,
+        id_usuario character varying(15) NOT NULL,
         nota integer NOT NULL,
         votos integer NOT NULL,
         votos_util integer NOT NULL,

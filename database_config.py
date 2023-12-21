@@ -61,7 +61,6 @@ def create_tables(connection):
         cursor.execute(SQLC.TABELA_CATEGORIAS)
         cursor.execute(SQLC.TABELA_P_CATEGORIA)
         cursor.execute(SQLC.TABELA_AVALIACOES)
-        #cursor.execute(SQLC.TESTE)
 
         cursor.close()
         connection[1].commit()
@@ -76,22 +75,35 @@ def insert_data(connection, products):
     if (connection[0] == FALHA_CONEXAO):
         return
     try:
-
         cursor = connection[1].cursor()
-        """ cursor.execute(SQLC.INSERE_PRODUTO.format(('743AB','titulo','grupies',45)))
-        cursor.execute(SQLC.INSERE_CATEGORIAS.format((12,'SANTOS')))
-        cursor.execute(SQLC.INSERE_PRODUTO_CATEGORIA.format(('743AB',12))) """
-        for i in range(len(products)):
+        categorias_unicas = set()
+
+        #1º loop varre os produtos e filtra suas categorias, pois sua inserção vem primeiro
+        for produto in products:
+            for categoria in produto['categories']:
+                categorias_unicas.add((categoria['name'], categoria['id']))
+        
+        #Inserção das categorias
+        for nome_categoria, id_categoria in categorias_unicas:
+            cursor.execute(SQLC.INSERE_CATEGORIAS,(id_categoria,nome_categoria))
+
+        #2º Loop povoa todas as demais tabela, pois pode ser feita inserção direta    
+        for i in range(len(products)): 
+            actual_product = products[i]   
+            #Insere os produtos
+            cursor.execute(SQLC.INSERE_PRODUTO,(actual_product['asin'],actual_product['title'],actual_product['group'],actual_product['salesrank']))    
             
-            actual_product = products[i]
-            
-            cursor.execute(SQLC.INSERE_PRODUTO,(actual_product['asin'],actual_product['title'],actual_product['group'],actual_product['salesrank']))
-            #TBD
-            """ cursor.execute(SQLC.INSERE_CATEGORIAS,(actual_product[]))
-            cursor.execute(SQLC.INSERE_PRODUTO_CATEGORIA,())
-            cursor.execute(SQLC.INSERE_PRODUTO_SIMILAR,())
-            cursor.execute(SQLC.INSERE_AVALIACOES,()) """
-            
+            #Insere os produtos e suas devidas categorias
+            for categoria in actual_product['categories']:
+               cursor.execute(SQLC.INSERE_PRODUTO_CATEGORIA,(actual_product['asin'],categoria['id']))
+
+            #Insere os asins e seus similares
+            for i in range(len(actual_product['similar'])):
+                cursor.execute(SQLC.INSERE_PRODUTO_SIMILAR,(actual_product['asin'],actual_product['similar'][i]))
+
+            #Insere as avaliações e seus dados atrelados    
+            for i in range(len(actual_product['reviews'])):
+                cursor.execute(SQLC.INSERE_AVALIACOES,(i,actual_product['asin'],actual_product['reviews'][i]['date'],actual_product['reviews'][i]['customer'],actual_product['reviews'][i]['rating'],actual_product['reviews'][i]['votes'],actual_product['reviews'][i]['helpful']))
         cursor.close()
 
         return SUCESSO_CRIAR_BANCO
