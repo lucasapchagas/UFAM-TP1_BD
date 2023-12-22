@@ -63,4 +63,53 @@ class SQLC:
 
 # Classe com as query SQL para a dashboard do programa
 class SQLD:
-    pass
+    LETRA_A1P = """SELECT * FROM avaliacoes
+                WHERE asin = (%s)
+                ORDER BY votos_util DESC, nota DESC
+                LIMIT 5;"""
+    
+    LETRA_A2P = """ SELECT * FROM avaliacoes
+                WHERE asin = %s
+                ORDER BY votos_util DESC, nota ASC
+                LIMIT 5; """
+    
+    LETRA_B = """ SELECT p2.* FROM produto_similar ps
+                INNER JOIN produto p1 ON p1.asin = ps.asin
+                INNER JOIN produto p2 ON p2.asin = ps.asin_similar
+                WHERE p1.asin = %s AND p2.rank_vendas > p1.rank_vendas; """
+    
+    LETRA_C = """SELECT data, AVG(nota) as media_avaliacao
+                FROM avaliacoes
+                WHERE asin = %s'
+                GROUP BY data
+                ORDER BY data;"""
+    
+    LETRA_D = """
+                SELECT grupo, asin, titulo, rank_vendas
+                FROM produto
+                WHERE grupo = %s
+                ORDER BY grupo, rank_vendas ASC
+                FETCH FIRST 10 ROWS ONLY;"""
+    
+    LETRA_E = """SELECT a.asin, AVG(a.votos_util) as media_votos_util
+                FROM avaliacoes a
+                INNER JOIN produto p ON p.asin = a.asin
+                GROUP BY a.asin
+                ORDER BY media_votos_util DESC
+                LIMIT 10;"""
+    
+    LETRA_F = """SELECT c.categoria_nome, AVG(a.votos_util) as media_votos_util
+                FROM avaliacoes a
+                INNER JOIN produto_categoria pc ON pc.asin = a.asin
+                INNER JOIN categorias c ON c.categoria_id = pc.categoria_id
+                GROUP BY c.categoria_nome
+                ORDER BY media_votos_util DESC
+                LIMIT 5;"""
+
+    LETRA_G = """SELECT p.grupo, a.id_usuario, COUNT(*) as total_comentarios
+                FROM avaliacoes a
+                WHERE p.grupo = %s
+                INNER JOIN produto p ON p.asin = a.asin
+                GROUP BY p.grupo, a.id_usuario
+                ORDER BY p.grupo, total_comentarios DESC
+                LIMIT 10;"""

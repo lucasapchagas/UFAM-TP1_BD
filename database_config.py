@@ -1,7 +1,7 @@
 import psycopg2
 from psycopg2 import OperationalError
 import configparser
-from commands_sql import SQLC
+from commands_sql import SQLC,SQLD
 from read_file import parse_products
 
 FALHA_CONEXAO = "ERRO AO CONECTAR AO BANCO DE DADOS"
@@ -104,19 +104,21 @@ def insert_data(connection, products):
             #Insere as avaliações e seus dados atrelados    
             for i in range(len(actual_product['reviews'])):
                 cursor.execute(SQLC.INSERE_AVALIACOES,(i,actual_product['asin'],actual_product['reviews'][i]['date'],actual_product['reviews'][i]['customer'],actual_product['reviews'][i]['rating'],actual_product['reviews'][i]['votes'],actual_product['reviews'][i]['helpful']))
+        
         cursor.close()
-
         return SUCESSO_CRIAR_BANCO
     except OperationalError as e:
         return FALHA_CONEXAO, str(e)
     finally:
         connection[1].close()
 
-#test program        
-teste = create_connection()
+
+# PARA TESTAR TODA ESSA PARTE INICIAL        
+""" teste = create_connection()
 create_database(teste,"teste1")
 teste = create_connection(False,"teste1")
 create_tables(teste)
 teste = create_connection(False,"teste1")
 products = parse_products("amazon-meta-sample.txt")
 insert_data(teste, products)
+ """
