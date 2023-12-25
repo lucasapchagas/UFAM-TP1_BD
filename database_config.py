@@ -87,8 +87,7 @@ def insert_data(connection, products):
             cursor.execute(SQLC.INSERE_CATEGORIAS,(id_categoria,nome_categoria))
        
         #2º Loop povoa todas as demais tabela, pois pode ser feita inserção direta    
-        for i in range(len(products)):
-            pass 
+        for i in range(len(products)): 
             actual_product = products[i]   
             #Insere os produtos
             actual_product_insert = [(actual_product['asin'],actual_product['title'],actual_product['group'],actual_product['salesrank'])] 
