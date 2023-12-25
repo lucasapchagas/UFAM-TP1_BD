@@ -1,4 +1,5 @@
 import psycopg2
+from psycopg2.extras import execute_values
 from psycopg2 import OperationalError
 import configparser
 from commands_sql import SQLC,SQLD
@@ -77,48 +78,52 @@ def insert_data(connection, products):
     try:
         cursor = connection[1].cursor()
         categorias_unicas = set()
-
         #1º loop varre os produtos e filtra suas categorias, pois sua inserção vem primeiro
         for produto in products:
             for categoria in produto['categories']:
                 categorias_unicas.add((categoria['name'], categoria['id']))
-        
-        #Inserção das categorias
+         #Inserção das categorias
         for nome_categoria, id_categoria in categorias_unicas:
             cursor.execute(SQLC.INSERE_CATEGORIAS,(id_categoria,nome_categoria))
-
+       
         #2º Loop povoa todas as demais tabela, pois pode ser feita inserção direta    
-        for i in range(len(products)): 
+        for i in range(len(products)):
+            pass 
             actual_product = products[i]   
             #Insere os produtos
-            cursor.execute(SQLC.INSERE_PRODUTO,(actual_product['asin'],actual_product['title'],actual_product['group'],actual_product['salesrank']))    
-            
-            #Insere os produtos e suas devidas categorias
+            actual_product_insert = [(actual_product['asin'],actual_product['title'],actual_product['group'],actual_product['salesrank'])] 
+            execute_values(cursor, SQLC.INSERE_PRODUTO,actual_product_insert, page_size=10000)
+        
+            #Insere os produtos e suas devidas categorias 
             for categoria in actual_product['categories']:
-               cursor.execute(SQLC.INSERE_PRODUTO_CATEGORIA,(actual_product['asin'],categoria['id']))
+                actual_product_insert = [(actual_product['asin'],categoria['id'])]
+                execute_values(cursor,SQLC.INSERE_PRODUTO_CATEGORIA,actual_product_insert,page_size=10000)
 
             #Insere os asins e seus similares
             for i in range(len(actual_product['similar'])):
-                cursor.execute(SQLC.INSERE_PRODUTO_SIMILAR,(actual_product['asin'],actual_product['similar'][i]))
+                actual_product_insert = [(actual_product['asin'],actual_product['similar'][i])]
+                execute_values(cursor, SQLC.INSERE_PRODUTO_SIMILAR,actual_product_insert, page_size=10)
+               
 
             #Insere as avaliações e seus dados atrelados    
             for i in range(len(actual_product['reviews'])):
-                cursor.execute(SQLC.INSERE_AVALIACOES,(i,actual_product['asin'],actual_product['reviews'][i]['date'],actual_product['reviews'][i]['customer'],actual_product['reviews'][i]['rating'],actual_product['reviews'][i]['votes'],actual_product['reviews'][i]['helpful']))
+                actual_product_insert = [(i,actual_product['asin'],actual_product['reviews'][i]['date'],actual_product['reviews'][i]['customer'],actual_product['reviews'][i]['rating'],actual_product['reviews'][i]['votes'],actual_product['reviews'][i]['helpful'])]
+                execute_values(cursor, SQLC.INSERE_AVALIACOES,actual_product_insert, page_size=10000)
+                
         
-        cursor.close()
         return SUCESSO_CRIAR_BANCO
     except OperationalError as e:
         return FALHA_CONEXAO, str(e)
     finally:
+        cursor.close()
         connection[1].close()
 
 
-# PARA TESTAR TODA ESSA PARTE INICIAL        
-""" teste = create_connection()
+# PARA TESTAR TODA ESSA PARTE INICIAL  (CONECT + CREATE TABLE + INSERTS)     
+teste = create_connection()
 create_database(teste,"teste1")
 teste = create_connection(False,"teste1")
 create_tables(teste)
 teste = create_connection(False,"teste1")
-products = parse_products("amazon-meta-sample.txt")
+products = parse_products("amazon-meta.txt")
 insert_data(teste, products)
- """

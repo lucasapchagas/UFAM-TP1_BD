@@ -51,15 +51,15 @@ class SQLC:
     """
 
     INSERE_PRODUTO_CATEGORIA = """INSERT INTO produto_categoria(asin, categoria_id)
-    VALUES (%s,%s);"""
+    VALUES %s;"""
 
-    INSERE_PRODUTO_SIMILAR = """INSERT INTO produto_similar(asin, asin_similar) VALUES (%s, %s);"""
+    INSERE_PRODUTO_SIMILAR = """INSERT INTO produto_similar(asin, asin_similar) VALUES %s;"""
 
     INSERE_CATEGORIAS = """INSERT INTO categorias(categoria_id, categoria_nome) VALUES (%s,%s);"""
 
-    INSERE_AVALIACOES = """INSERT INTO avaliacoes(avaliacao_id, asin, data, id_usuario, nota, votos, votos_util) VALUES (%s,%s,%s,%s,%s,%s,%s);"""
+    INSERE_AVALIACOES = """INSERT INTO avaliacoes(avaliacao_id, asin, data, id_usuario, nota, votos, votos_util) VALUES %s;"""
 
-    INSERE_PRODUTO = """INSERT INTO produto(asin, titulo, grupo, rank_vendas) VALUES (%s,%s,%s,%s);"""
+    INSERE_PRODUTO = """INSERT INTO produto(asin, titulo, grupo, rank_vendas) VALUES %s;"""
 
 # Classe com as query SQL para a dashboard do programa
 class SQLD:
@@ -108,8 +108,16 @@ class SQLD:
 
     LETRA_G = """SELECT p.grupo, a.id_usuario, COUNT(*) as total_comentarios
                 FROM avaliacoes a
-                WHERE p.grupo = %s
                 INNER JOIN produto p ON p.asin = a.asin
+                WHERE p.grupo = %s
                 GROUP BY p.grupo, a.id_usuario
                 ORDER BY p.grupo, total_comentarios DESC
                 LIMIT 10;"""
+    
+
+
+"""SELECT p1.asin, p2.titulo,p2.rank_vendas as rank_vendas_similar FROM produto_similar p1
+JOIN produto p2 ON p1.asin = p2.asin
+WHERE p1.asin = '0878571256' AND p2.rank_vendas > (
+SELECT rank_vendas FROM produto WHERE asin='0878571256'
+);"""    

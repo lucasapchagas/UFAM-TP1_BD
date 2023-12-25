@@ -36,7 +36,7 @@ def parse_products(file_path, output_path="output.json"):
     products = []
     product = {}
 
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r', encoding="utf8") as file:
         for line in file:
             if 'discontinued' in line:
                 product = {}

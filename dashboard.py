@@ -1,7 +1,7 @@
 import os
 from queries import *
 
-asin = '0446312193'
+asin = '0827229534'
 
-
+query_B(asin)
 
