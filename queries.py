@@ -16,21 +16,25 @@ def query_A(asin):
     try:
         print("Respondendo questao letra a) \n")
         print("Os 5 comentarios mais uteis e com maior avaliacao:")
+        print("ASIN: {}\n".format(asin))
         cursor.execute(SQLD.LETRA_A1P,(asin,))
-        print("ASIN | DATE (YMD) | COSTUME | NOTA | VOTOS | VOTOS UTEIS \n")
+        print("DATE (YMD) | USUARIO | AVALIACOES | VOTOS UTEIS \n")
         linhas = cursor.fetchall()
-    
+        dict_aux = {}
         for linha in linhas:
-            print(linha[1:])
+            dict_aux = {"data":linha[0], "usuario":linha[1],"nota":linha[2],"votos_uteis":linha[3]}
+            print("{} | {} | {} | {}".format(dict_aux['data'],dict_aux['usuario'],dict_aux['nota'],dict_aux['votos_uteis']))
 
-        print("\nOs 5 comentarios mais uteis e com menor avaliacao:")    
+        print("\nOs 5 comentarios mais uteis e com menor avaliacao:")
+        print("ASIN: {}\n".format(asin))    
         cursor.execute(SQLD.LETRA_A2P,(asin,))
-        print("ASIN | DATE (YMD) | COSTUME | NOTA | VOTOS | VOTOS UTEIS \n")
+        print("DATE (YMD) | COSTUME | AVALIACOES | VOTOS UTEIS \n")
         linhas = cursor.fetchall()
-    
+        dict_aux = {}
         for linha in linhas:
-            print(linha[1:])
-        print("\n") 
+            dict_aux = {"data":linha[0], "usuario":linha[1],"nota":linha[2],"votos_uteis":linha[3]}
+            print("{} | {} | {} | {}".format(dict_aux['data'],dict_aux['usuario'],dict_aux['nota'],dict_aux['votos_uteis']))
+         
     except Exception as error:
         print("Aconteceu um erro: ",error) 
     finally:
@@ -46,11 +50,10 @@ def query_B(asin):
     try:
         cursor.execute(SQLD.LETRA_B,(asin,))
         print("Respondendo a letra b): \n")
-        print("\nASIN | PRODUTO SIMILAR\n")
+        print("\nASIN | PRODUTO SIMILAR | Rank de vendas\n")
         linhas = cursor.fetchall()
         for linha in linhas:
-            print(linha)
-        print("\n")    
+            print(linha)   
     except Exception as error:
         print("Aconteceu um erro: ",error)
     finally:
@@ -88,7 +91,7 @@ def query_D():
         cursor.execute("""SELECT DISTINCT grupo FROM produto""")
         grupos = cursor.fetchall()
         
-        print("Respondendo questao letra b)\nOs itens estão descrito na ordem decrescente, ou seja, do mais vendido pro menos vendido")
+        print("Respondendo questao letra b)\nOs itens estao descrito na ordem decrescente, ou seja, do mais vendido pro menos vendido")
         for grupo in grupos:
             print("Grupo: ",grupo[0])
             print("ASIN | TITULO | RANK DE VENDAS")
@@ -112,13 +115,13 @@ def query_E():
     try:
         cursor.execute(SQLD.LETRA_E)
         print("Respondendo letra e):\n")
-        print("ASIN | MEDIA AVALIACOES POSITIVAS")
+        print("ASIN       | MEDIA AVALIACOES POSITIVAS")
 
         dict_aux = {}
         linhas = cursor.fetchall()
         for linha in linhas:
             dict_aux = {"asin":linha[0],"media":linha[1]}
-            print("{}  {:.2f}".format(dict_aux['asin'],float(dict_aux['media'])))
+            print("{} | {:.2f}".format(dict_aux['asin'],float(dict_aux['media'])))
         
     except Exception as error:
         print(error)
@@ -164,7 +167,7 @@ def query_G():
             cursor.execute(SQLD.LETRA_G,(grupo,))
             linhas = cursor.fetchall()
             for linha in linhas:
-                print(linha)
+                print(linha[1:])
     except Exception as error:
         print("Aconteceu um erro: ",error)
     finally:

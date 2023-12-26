@@ -63,20 +63,21 @@ class SQLC:
 
 # Classe com as query SQL para a dashboard do programa
 class SQLD:
-    LETRA_A1P = """SELECT * FROM avaliacoes
-                WHERE asin = %s
+    LETRA_A1P = """SELECT data,id_usuario,nota,votos_util FROM avaliacoes
+                WHERE asin = %s AND nota >= 4
                 ORDER BY votos_util DESC, nota DESC
                 LIMIT 5;"""
     
-    LETRA_A2P = """ SELECT * FROM avaliacoes
-                WHERE asin = %s
-                ORDER BY votos_util DESC, nota ASC
-                LIMIT 5; """
+    LETRA_A2P = """SELECT data,id_usuario,nota,votos_util FROM avaliacoes
+                WHERE asin = %s AND nota <= 3
+                ORDER BY votos_util ASC,nota DESC
+                LIMIT 5;"""
     
-    LETRA_B = """ SELECT p2.* FROM produto_similar ps
+    LETRA_B = """ SELECT p2.asin, p2.titulo, p2.rank_vendas FROM produto_similar ps
                 INNER JOIN produto p1 ON p1.asin = ps.asin
                 INNER JOIN produto p2 ON p2.asin = ps.asin_similar
-                WHERE p1.asin = %s AND p2.rank_vendas < p1.rank_vendas; """
+                WHERE p1.asin = %s AND p2.rank_vendas < p1.rank_vendas
+                ORDER BY rank_vendas DESC;"""
     
     LETRA_C = """SELECT data as data_avaliacao, AVG(nota) as media_avaliacao
                 FROM avaliacoes
@@ -116,3 +117,13 @@ class SQLD:
     
 
 
+"""SELECT data,id_usuario,nota,votos_util FROM avaliacoes
+                WHERE asin = %s
+                ORDER BY votos_util DESC, nota DESC
+                LIMIT 5; a1p"""
+
+
+""" SELECT data,id_usuario,nota,votos_util FROM avaliacoes
+                WHERE asin = %s
+                ORDER BY nota ASC, votos_util DESC
+                LIMIT 5; a2p"""
