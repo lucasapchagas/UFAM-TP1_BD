@@ -79,19 +79,19 @@ def insert_data(connection, products):
         cursor = connection[1].cursor()
         categorias_unicas = set()
         #1º loop varre os produtos e filtra suas categorias, pois sua inserção vem primeiro
-        for produto in products:
+        """ for produto in products:
             for categoria in produto['categories']:
                 categorias_unicas.add((categoria['name'], categoria['id']))
          #Inserção das categorias
         for nome_categoria, id_categoria in categorias_unicas:
-            cursor.execute(SQLC.INSERE_CATEGORIAS,(id_categoria,nome_categoria))
+            cursor.execute(SQLC.INSERE_CATEGORIAS,(id_categoria,nome_categoria)) """
        
         #2º Loop povoa todas as demais tabela, pois pode ser feita inserção direta    
         for i in range(len(products)): 
             actual_product = products[i]   
             #Insere os produtos
-            actual_product_insert = [(actual_product['asin'],actual_product['title'],actual_product['group'],actual_product['salesrank'])] 
-            execute_values(cursor, SQLC.INSERE_PRODUTO,actual_product_insert, page_size=10000)
+            """ actual_product_insert = [(actual_product['asin'],actual_product['title'],actual_product['group'],actual_product['salesrank'])] 
+            execute_values(cursor, SQLC.INSERE_PRODUTO,actual_product_insert, page_size=10000) """
         
             #Insere os produtos e suas devidas categorias 
             for categoria in actual_product['categories']:
@@ -99,15 +99,15 @@ def insert_data(connection, products):
                 execute_values(cursor,SQLC.INSERE_PRODUTO_CATEGORIA,actual_product_insert,page_size=10000)
 
             #Insere os asins e seus similares
-            for i in range(len(actual_product['similar'])):
+            """ for i in range(len(actual_product['similar'])):
                 actual_product_insert = [(actual_product['asin'],actual_product['similar'][i])]
-                execute_values(cursor, SQLC.INSERE_PRODUTO_SIMILAR,actual_product_insert, page_size=10)
+                execute_values(cursor, SQLC.INSERE_PRODUTO_SIMILAR,actual_product_insert, page_size=10) """
                
 
             #Insere as avaliações e seus dados atrelados    
-            for i in range(len(actual_product['reviews'])):
+            """  for i in range(len(actual_product['reviews'])):
                 actual_product_insert = [(i,actual_product['asin'],actual_product['reviews'][i]['date'],actual_product['reviews'][i]['customer'],actual_product['reviews'][i]['rating'],actual_product['reviews'][i]['votes'],actual_product['reviews'][i]['helpful'])]
-                execute_values(cursor, SQLC.INSERE_AVALIACOES,actual_product_insert, page_size=10000)
+                execute_values(cursor, SQLC.INSERE_AVALIACOES,actual_product_insert, page_size=10000) """
                 
         
         return SUCESSO_CRIAR_BANCO
@@ -119,10 +119,10 @@ def insert_data(connection, products):
 
 
 # PARA TESTAR TODA ESSA PARTE INICIAL  (CONECT + CREATE TABLE + INSERTS)     
-teste = create_connection()
+""" teste = create_connection()
 create_database(teste,"teste1")
 teste = create_connection(False,"teste1")
 create_tables(teste)
 teste = create_connection(False,"teste1")
 products = parse_products("amazon-meta.txt")
-insert_data(teste, products)
+insert_data(teste, products)"""

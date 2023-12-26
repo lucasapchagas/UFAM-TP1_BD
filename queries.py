@@ -31,38 +31,45 @@ def query_A(asin):
     
         for linha in linhas:
             print(linha[1:])
-        
+        print("\n") 
     except Exception as error:
-        print("Aconteceu um erro ",error) 
+        print("Aconteceu um erro: ",error) 
     finally:
         cursor.close()
         connection[1].close() 
                   
-def query_B(asin): #PRA FAZER
+def query_B(asin):
     connection = create_connection(False, "teste1")
     if (connection[0] == FALHA_CONEXAO):
         return
-    
-    cursor = connection[1].cursor()
-    cursor.execute(SQLD.LETRA_B(asin,))
-    print("Respondendo a letra b): \n")
-    print("\nASIN | PRODUTO SIMILAR\n")
-    linhas = cursor.fetchall()
-    for linha in linhas:
-        print(linha)
-    """ try:
+    try:
+        cursor = connection[1].cursor()
+        cursor.execute(SQLD.LETRA_B,(asin,))
+        print("Respondendo a letra b): \n")
+        print("\nASIN | PRODUTO SIMILAR\n")
+        linhas = cursor.fetchall()
+        for linha in linhas:
+            print(linha)
+        print("\n")    
     except Exception as error:
         print("Aconteceu um erro: ",error)
     finally:
-        connection[1].close()  """   
+        cursor.close()
+        connection[1].close() 
 
-def query_C(): #PRA FAZER
+def query_C(asin): 
     connection = create_connection(False, "teste1")
     if (connection[0] == FALHA_CONEXAO):
         return
     
     cursor = connection[1].cursor()
-
+    cursor.execute(SQLD.LETRA_C,(asin,))
+    print("Respondendo a letra c): \n")
+    linhas = cursor.fetchall()
+    for linha in linhas:
+        print(linha)
+    cursor.close()
+    connection[1].close()
 
 def query_D():
     connection = create_connection(False, "teste1")
@@ -73,15 +80,16 @@ def query_D():
         
         cursor.execute("""SELECT DISTINCT grupo FROM produto""")
         grupos = cursor.fetchall()
-        print("Respondendo questao letra b)\n")
+        
+        print("Respondendo questao letra b)\nOs itens estão descrito na ordem decrescente, ou seja, do mais vendido pro menos vendido")
         for grupo in grupos:
             print("Grupo: ",grupo[0])
             print("ASIN | TITULO | RANK DE VENDAS")
             cursor.execute(SQLD.LETRA_D,(grupo,))
-
             linhas = cursor.fetchall()
+            
             for linha in linhas:
-                print(linha[1:])        
+                print(linha[1:])   
     except Exception as error:
         print(error)
     finally:
@@ -102,7 +110,7 @@ def query_E():
         linhas = cursor.fetchall()
         for linha in linhas:
             dict_aux = {"asin":linha[0],"media":linha[1]}
-            print("{} {:.2f}".format(dict_aux['asin'],float(dict_aux['media'])))
+            print("{} | {:.2f}".format(dict_aux['asin'],float(dict_aux['media'])))
         
     except Exception as error:
         print(error)
@@ -124,7 +132,7 @@ def query_F():
         dict_aux = {}
         for linha in linhas:
             dict_aux = {"categories":linha[0],"media":linha[1]}
-            print("{} {:.2f}".format(dict_aux['categories'],float(dict_aux['media'])))
+            print("{} | {:.2f}".format(dict_aux['categories'],float(dict_aux['media'])))
     except Exception as error:
         print("Aconteceu um erro: ",error)
     finally:   

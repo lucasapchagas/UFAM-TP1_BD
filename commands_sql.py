@@ -64,7 +64,7 @@ class SQLC:
 # Classe com as query SQL para a dashboard do programa
 class SQLD:
     LETRA_A1P = """SELECT * FROM avaliacoes
-                WHERE asin = (%s)
+                WHERE asin = %s
                 ORDER BY votos_util DESC, nota DESC
                 LIMIT 5;"""
     
@@ -76,18 +76,18 @@ class SQLD:
     LETRA_B = """ SELECT p2.* FROM produto_similar ps
                 INNER JOIN produto p1 ON p1.asin = ps.asin
                 INNER JOIN produto p2 ON p2.asin = ps.asin_similar
-                WHERE p1.asin = %s AND p2.rank_vendas > p1.rank_vendas; """
+                WHERE p1.asin = %s AND p2.rank_vendas < p1.rank_vendas; """
     
     LETRA_C = """SELECT data, AVG(nota) as media_avaliacao
                 FROM avaliacoes
-                WHERE asin = %s'
+                WHERE asin = %s
                 GROUP BY data
                 ORDER BY data;"""
     
     LETRA_D = """
                 SELECT grupo, asin, titulo, rank_vendas
                 FROM produto
-                WHERE grupo = %s
+                WHERE grupo = %s AND rank_vendas <> -1 AND rank_vendas <> 0
                 ORDER BY grupo, rank_vendas ASC
                 FETCH FIRST 10 ROWS ONLY;"""
     
