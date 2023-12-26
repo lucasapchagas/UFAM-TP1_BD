@@ -78,7 +78,7 @@ class SQLD:
                 INNER JOIN produto p2 ON p2.asin = ps.asin_similar
                 WHERE p1.asin = %s AND p2.rank_vendas < p1.rank_vendas; """
     
-    LETRA_C = """SELECT data, AVG(nota) as media_avaliacao
+    LETRA_C = """SELECT data as data_avaliacao, AVG(nota) as media_avaliacao
                 FROM avaliacoes
                 WHERE asin = %s
                 GROUP BY data
@@ -116,8 +116,3 @@ class SQLD:
     
 
 
-"""SELECT p1.asin, p2.titulo,p2.rank_vendas as rank_vendas_similar FROM produto_similar p1
-JOIN produto p2 ON p1.asin = p2.asin
-WHERE p1.asin = '0878571256' AND p2.rank_vendas > (
-SELECT rank_vendas FROM produto WHERE asin='0878571256'
-);"""    

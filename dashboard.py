@@ -1,7 +1,7 @@
 import os
 from queries import *
 
-asin = '0827229534'
+asin = '0738700797'
 
-query_D()
+query_C(asin)
 

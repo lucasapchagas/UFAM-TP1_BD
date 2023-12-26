@@ -7,14 +7,13 @@ FALHA_CONEXAO = "ERRO AO CONECTAR AO BANCO DE DADOS"
 SUCESSO_CONEXAO = "SUCESSO AO CONECTAR AO BANCO DE DADOS"
 SUCESSO_CRIAR_BANCO = "SUCESSO AO CRIAR BANCO DE DADOS"
 
-def query_A(asin):
+#Letra a) Dado um produto, listar os 5 comentários mais úteis e com maior avaliação e os 5 comentários mais úteis e com menor avaliação
+def query_A(asin): 
     connection = create_connection(False, "teste1")
     if (connection[0] == FALHA_CONEXAO):
         return
-    
-    #Letra a) Dado um produto, listar os 5 comentários mais úteis e com maior avaliação e os 5 comentários mais úteis e com menor avaliação
+    cursor = connection[1].cursor()
     try:
-        cursor = connection[1].cursor()
         print("Respondendo questao letra a) \n")
         print("Os 5 comentarios mais uteis e com maior avaliacao:")
         cursor.execute(SQLD.LETRA_A1P,(asin,))
@@ -37,13 +36,14 @@ def query_A(asin):
     finally:
         cursor.close()
         connection[1].close() 
-                  
+
+# Letra b) Dado um produto, listar os produtos similares com maiores vendas do que ele              
 def query_B(asin):
     connection = create_connection(False, "teste1")
     if (connection[0] == FALHA_CONEXAO):
         return
+    cursor = connection[1].cursor()
     try:
-        cursor = connection[1].cursor()
         cursor.execute(SQLD.LETRA_B,(asin,))
         print("Respondendo a letra b): \n")
         print("\nASIN | PRODUTO SIMILAR\n")
@@ -57,27 +57,34 @@ def query_B(asin):
         cursor.close()
         connection[1].close() 
 
+#Letra c) Dado um produto, mostrar a evolução diária das médias de avaliação ao longo do intervalo de tempo coberto no arquivo de entrada 
 def query_C(asin): 
     connection = create_connection(False, "teste1")
     if (connection[0] == FALHA_CONEXAO):
         return
-    
     cursor = connection[1].cursor()
-    cursor.execute(SQLD.LETRA_C,(asin,))
-    print("Respondendo a letra c): \n")
-    linhas = cursor.fetchall()
-    for linha in linhas:
-        print(linha)
-    cursor.close()
-    connection[1].close()
+    try:
+        cursor.execute(SQLD.LETRA_C,(asin,))
+        print("Respondendo a letra c): \nProduto: {}".format(asin))
+        print("Data YMD   | Media das Avaliacoes")
+        dict_aux = {}
+        linhas = cursor.fetchall()
+        for linha in linhas:
+            dict_aux = {"data":linha[0], "media":linha[1]}
+            print("{} | {:.2f}".format(dict_aux['data'],dict_aux['media']))
+    except Exception as error:
+        print("Aconteceu um erro: ",error)
+    finally:    
+        cursor.close()
+        connection[1].close()
 
+#Letra d) Listar os 10 produtos líderes de venda em cada grupo de produtos
 def query_D():
     connection = create_connection(False, "teste1")
     if (connection[0] == FALHA_CONEXAO):
         return
+    cursor = connection[1].cursor()
     try:
-        cursor = connection[1].cursor()    
-        
         cursor.execute("""SELECT DISTINCT grupo FROM produto""")
         grupos = cursor.fetchall()
         
@@ -94,14 +101,15 @@ def query_D():
         print(error)
     finally:
         cursor.close()
-        connection[1].close()    
+        connection[1].close() 
 
+#Letra e) Listar os 10 produtos com a maior média de avaliações úteis positivas por produto
 def query_E():
     connection = create_connection(False, "teste1")
     if (connection[0] == FALHA_CONEXAO):
         return
+    cursor = connection[1].cursor()
     try:
-        cursor = connection[1].cursor()
         cursor.execute(SQLD.LETRA_E)
         print("Respondendo letra e):\n")
         print("ASIN | MEDIA AVALIACOES POSITIVAS")
@@ -110,7 +118,7 @@ def query_E():
         linhas = cursor.fetchall()
         for linha in linhas:
             dict_aux = {"asin":linha[0],"media":linha[1]}
-            print("{} | {:.2f}".format(dict_aux['asin'],float(dict_aux['media'])))
+            print("{}  {:.2f}".format(dict_aux['asin'],float(dict_aux['media'])))
         
     except Exception as error:
         print(error)
@@ -118,12 +126,13 @@ def query_E():
         cursor.close()
         connection[1].close() 
 
+#Letra f) Listar a 5 categorias de produto com a maior média de avaliações úteis positivas por produto
 def query_F():
     connection = create_connection(False, "teste1")
     if (connection[0] == FALHA_CONEXAO):
         return 
+    cursor = connection[1].cursor()
     try:
-        cursor = connection[1].cursor()
         cursor.execute(SQLD.LETRA_F)
         print("Respondendo a questao f):\n")
         print("CATEGORIAS | MEDIA AVALIACAO UTIL")
@@ -132,19 +141,20 @@ def query_F():
         dict_aux = {}
         for linha in linhas:
             dict_aux = {"categories":linha[0],"media":linha[1]}
-            print("{} | {:.2f}".format(dict_aux['categories'],float(dict_aux['media'])))
+            print("{}  {:.2f}".format(dict_aux['categories'],float(dict_aux['media'])))
     except Exception as error:
         print("Aconteceu um erro: ",error)
     finally:   
         cursor.close()
         connection[1].close()
 
+#Letra g) Listar os 10 clientes que mais fizeram comentários por grupo de produto
 def query_G():
     connection = create_connection(False, "teste1")
     if (connection[0] == FALHA_CONEXAO):
         return 
-    try:
-        cursor = connection[1].cursor()
+    cursor = connection[1].cursor()
+    try:    
         print("Respondendo a questao g): \n")
         print("GRUPO | ID_USUARIO | TOTAL COMENTARIOS")
         cursor.execute("""SELECT DISTINCT grupo FROM produto""")
