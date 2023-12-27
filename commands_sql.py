@@ -40,8 +40,8 @@ class SQLC:
     TABELA_AVALIACOES = """CREATE TABLE IF NOT EXISTS avaliacoes (
         avaliacao_id integer NOT NULL,
         asin character varying(15) NOT NULL,
-        data date NOT NULL,
         id_usuario character varying(15) NOT NULL,
+        data date NOT NULL,
         nota integer NOT NULL,
         votos integer NOT NULL,
         votos_util integer NOT NULL,
@@ -57,18 +57,18 @@ class SQLC:
 
     INSERE_CATEGORIAS = """INSERT INTO categorias(categoria_id, categoria_nome) VALUES (%s,%s);"""
 
-    INSERE_AVALIACOES = """INSERT INTO avaliacoes(avaliacao_id, asin, data, id_usuario, nota, votos, votos_util) VALUES %s;"""
+    INSERE_AVALIACOES = """INSERT INTO avaliacoes(avaliacao_id, asin, id_usuario, data,nota, votos, votos_util) VALUES %s;"""
 
     INSERE_PRODUTO = """INSERT INTO produto(asin, titulo, grupo, rank_vendas) VALUES %s;"""
 
 # Classe com as query SQL para a dashboard do programa
 class SQLD:
-    LETRA_A1P = """SELECT data,id_usuario,nota,votos_util FROM avaliacoes
+    LETRA_A1P = """SELECT id_usuario, data,nota,votos_util FROM avaliacoes
                 WHERE asin = %s AND nota >= 4
                 ORDER BY votos_util DESC, nota DESC
                 LIMIT 5;"""
     
-    LETRA_A2P = """SELECT data,id_usuario,nota,votos_util FROM avaliacoes
+    LETRA_A2P = """SELECT id_usuario,data,nota,votos_util FROM avaliacoes
                 WHERE asin = %s AND nota <= 3
                 ORDER BY votos_util ASC,nota DESC
                 LIMIT 5;"""

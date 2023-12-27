@@ -18,22 +18,22 @@ def query_A(asin):
         print("Os 5 comentarios mais uteis e com maior avaliacao:")
         print("ASIN: {}\n".format(asin))
         cursor.execute(SQLD.LETRA_A1P,(asin,))
-        print("DATE (YMD) | USUARIO | AVALIACOES | VOTOS UTEIS \n")
+        print("USUARIO | DATA (YMD) | AVALIACOES | VOTOS UTEIS \n")
         linhas = cursor.fetchall()
         dict_aux = {}
         for linha in linhas:
-            dict_aux = {"data":linha[0], "usuario":linha[1],"nota":linha[2],"votos_uteis":linha[3]}
-            print("{} | {} | {} | {}".format(dict_aux['data'],dict_aux['usuario'],dict_aux['nota'],dict_aux['votos_uteis']))
+            dict_aux = {"usuario":linha[0],"data":linha[1],"nota":linha[2],"votos_uteis":linha[3]}
+            print("{} | {} | {} | {}".format(dict_aux['usuario'],dict_aux['data'],dict_aux['nota'],dict_aux['votos_uteis']))
 
         print("\nOs 5 comentarios mais uteis e com menor avaliacao:")
         print("ASIN: {}\n".format(asin))    
         cursor.execute(SQLD.LETRA_A2P,(asin,))
-        print("DATE (YMD) | COSTUME | AVALIACOES | VOTOS UTEIS \n")
+        print("USUARIO | DATA(YMD) | AVALIACOES | VOTOS UTEIS \n")
         linhas = cursor.fetchall()
         dict_aux = {}
         for linha in linhas:
-            dict_aux = {"data":linha[0], "usuario":linha[1],"nota":linha[2],"votos_uteis":linha[3]}
-            print("{} | {} | {} | {}".format(dict_aux['data'],dict_aux['usuario'],dict_aux['nota'],dict_aux['votos_uteis']))
+            dict_aux = {"usuario":linha[0], "data":linha[1],"nota":linha[2],"votos_uteis":linha[3]}
+            print("{} | {} | {} | {}".format(dict_aux['usuario'],dict_aux['data'],dict_aux['nota'],dict_aux['votos_uteis']))
          
     except Exception as error:
         print("Aconteceu um erro: ",error) 
