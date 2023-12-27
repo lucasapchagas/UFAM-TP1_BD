@@ -5,7 +5,7 @@ import configparser
 from commands_sql import SQLC,SQLD
 from read_file import parse_products
 
-FALHA_CONEXAO = "ERRO AO CONECTAR AO BANCO DE DADOS"
+FALHA_OPERACAO = "FALHA AO OPERAR O BANCO DE DADOS"
 SUCESSO_CONEXAO = "SUCESSO AO CONECTAR AO BANCO DE DADOS"
 SUCESSO_CRIAR_BANCO = "SUCESSO AO CRIAR BANCO DE DADOS"
 
@@ -28,16 +28,16 @@ def create_connection(autocommit = False, database_name='postgres'):
         cursor.close()
         return SUCESSO_CONEXAO, connection
     except OperationalError as e:
-        return FALHA_CONEXAO, str(e)
+        return FALHA_OPERACAO, str(e)
 
 def create_database(connection, database_name):
     
     print(connection)
-    if (connection[0] == FALHA_CONEXAO):
+    if (connection[0] == FALHA_OPERACAO):
         return
     
     try:
-        COMANDO_SQL = SQLC.CRIAR_TABELA.format(database_name)
+        COMANDO_SQL = SQLC.CRIAR_DATABASE.format(database_name)
         
         cursor = connection[1].cursor()
         cursor.execute(COMANDO_SQL)
@@ -45,13 +45,13 @@ def create_database(connection, database_name):
 
         return SUCESSO_CRIAR_BANCO
     except OperationalError as e:
-        return FALHA_CONEXAO, str(e)
+        return FALHA_OPERACAO, str(e)
     finally:
         connection[1].commit()
         connection[1].close()
 
 def create_tables(connection):
-    if (connection[0] == FALHA_CONEXAO):
+    if (connection[0] == FALHA_OPERACAO):
         return
     
     try:
@@ -68,12 +68,12 @@ def create_tables(connection):
 
         return SUCESSO_CRIAR_BANCO
     except OperationalError as e:
-        return FALHA_CONEXAO, str(e)
+        return FALHA_OPERACAO, str(e)
     finally:
         connection[1].close()
 
 def insert_data(connection, products):
-    if (connection[0] == FALHA_CONEXAO):
+    if (connection[0] == FALHA_OPERACAO):
         return
     try:
         cursor = connection[1].cursor()
@@ -110,7 +110,7 @@ def insert_data(connection, products):
                 
         return SUCESSO_CRIAR_BANCO
     except OperationalError as e:
-        return FALHA_CONEXAO, str(e)
+        return FALHA_OPERACAO, str(e)
     finally:
         cursor.close()
         connection[1].close()

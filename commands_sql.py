@@ -2,7 +2,7 @@
 # Classe com as querys SLQ utilizadas no programa.
 class SQLC:
 
-    CRIAR_TABELA = """CREATE DATABASE {};"""
+    CRIAR_DATABASE = """CREATE DATABASE {};"""
 
     TABELA_PRODUTO = """CREATE TABLE IF NOT EXISTS public.produto (
         asin character varying(15) COLLATE pg_catalog."default" NOT NULL,
@@ -50,8 +50,7 @@ class SQLC:
     );
     """
 
-    INSERE_PRODUTO_CATEGORIA = """INSERT INTO produto_categoria(asin, categoria_id)
-    VALUES %s;"""
+    INSERE_PRODUTO_CATEGORIA = """INSERT INTO produto_categoria(asin, categoria_id) VALUES %s;"""
 
     INSERE_PRODUTO_SIMILAR = """INSERT INTO produto_similar(asin, asin_similar) VALUES %s;"""
 
@@ -63,67 +62,71 @@ class SQLC:
 
 # Classe com as query SQL para a dashboard do programa
 class SQLD:
+
+    # Dado um produto, listar os 5 comentários mais úteis e com maior avaliação 
     LETRA_A1P = """SELECT id_usuario, data,nota,votos_util FROM avaliacoes
                 WHERE asin = %s AND nota >= 4
                 ORDER BY votos_util DESC, nota DESC
-                LIMIT 5;"""
+                LIMIT 5;
+                """
     
+    # Dado um produto, listar os 5 comentários mais úteis e com menor avaliação
     LETRA_A2P = """SELECT id_usuario,data,nota,votos_util FROM avaliacoes
                 WHERE asin = %s AND nota <= 3
                 ORDER BY votos_util ASC,nota DESC
-                LIMIT 5;"""
+                LIMIT 5;
+                """
     
+    # Dado um produto, listar os produtos similares com maiores vendas do que ele
     LETRA_B = """ SELECT p2.asin, p2.titulo, p2.rank_vendas FROM produto_similar ps
                 INNER JOIN produto p1 ON p1.asin = ps.asin
                 INNER JOIN produto p2 ON p2.asin = ps.asin_similar
                 WHERE p1.asin = %s AND p2.rank_vendas < p1.rank_vendas
-                ORDER BY rank_vendas DESC;"""
+                ORDER BY rank_vendas DESC;
+                """
     
+    # Dado um produto, mostrar a evolução diária das médias de avaliação ao longo do intervalo de tempo coberto no arquivo de entrada
     LETRA_C = """SELECT data as data_avaliacao, AVG(nota) as media_avaliacao
                 FROM avaliacoes
                 WHERE asin = %s
                 GROUP BY data
-                ORDER BY data;"""
+                ORDER BY data;
+                """
     
+    # Listar os 10 produtos líderes de venda em cada grupo de produtos
     LETRA_D = """
                 SELECT grupo, asin, titulo, rank_vendas
                 FROM produto
                 WHERE grupo = %s AND rank_vendas <> -1 AND rank_vendas <> 0
                 ORDER BY grupo, rank_vendas ASC
-                FETCH FIRST 10 ROWS ONLY;"""
+                FETCH FIRST 10 ROWS ONLY;
+                """
     
+    # Listar os 10 produtos com a maior média de avaliações úteis positivas por produto
     LETRA_E = """SELECT a.asin, AVG(a.votos_util) as media_votos_util
                 FROM avaliacoes a
                 INNER JOIN produto p ON p.asin = a.asin
                 GROUP BY a.asin
                 ORDER BY media_votos_util DESC
-                LIMIT 10;"""
+                LIMIT 10;
+                """
     
+    # Listar a 5 categorias de produto com a maior média de avaliações úteis positivas por produto
     LETRA_F = """SELECT c.categoria_nome, AVG(a.votos_util) as media_votos_util
                 FROM avaliacoes a
                 INNER JOIN produto_categoria pc ON pc.asin = a.asin
                 INNER JOIN categorias c ON c.categoria_id = pc.categoria_id
                 GROUP BY c.categoria_nome
                 ORDER BY media_votos_util DESC
-                LIMIT 5;"""
-
+                LIMIT 5;
+                """
+    
+    # Listar os 10 clientes que mais fizeram comentários por grupo de produto
     LETRA_G = """SELECT p.grupo, a.id_usuario, COUNT(*) as total_comentarios
                 FROM avaliacoes a
                 INNER JOIN produto p ON p.asin = a.asin
                 WHERE p.grupo = %s
                 GROUP BY p.grupo, a.id_usuario
                 ORDER BY p.grupo, total_comentarios DESC
-                LIMIT 10;"""
-    
-
-
-"""SELECT data,id_usuario,nota,votos_util FROM avaliacoes
-                WHERE asin = %s
-                ORDER BY votos_util DESC, nota DESC
-                LIMIT 5; a1p"""
-
-
-""" SELECT data,id_usuario,nota,votos_util FROM avaliacoes
-                WHERE asin = %s
-                ORDER BY nota ASC, votos_util DESC
-                LIMIT 5; a2p"""
+                LIMIT 10;
+                """
