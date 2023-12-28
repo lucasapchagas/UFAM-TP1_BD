@@ -1,6 +1,7 @@
 from queries import *
 from database_config import *
 from datetime import datetime
+import configparser
 
 CONFIG_PREFIXO = "postgres=# "
 CONFIG_VERSAO = "1.0"
@@ -29,13 +30,21 @@ Comandos Disponiveis (Observação: o programa não faz distinção de letras ma
 """
 
 def main():
-    programa_rodando = True
+    config = configparser.ConfigParser()
+    config.read('db_config.ini')
+
+    database_name = config['database']['dbname']
+    QUERY_SET = QuerySet(database_name)
 
     printMotd()
     printHelp()
 
+    programa_rodando = True
     while programa_rodando:
-        programa_rodando = getInput()
+        programa_rodando = getInput(QUERY_SET)
+        QUERY_SET.init()
+
+    QUERY_SET.close()
 
 def printMotd():
     data_atual = datetime.now()
@@ -48,27 +57,27 @@ def printQmssg():
 def printHelp():
     print(CONFIG_PREFIXO + STRING_AJUDA)
 
-def getInput():
-    return parseOption(input(CONFIG_PREFIXO).upper())
+def getInput(query_set):
+    return parseOption(query_set, input(CONFIG_PREFIXO).upper())
 
 def getAsin():
     return input(CONFIG_PREFIXO + "Digite o ASIN do produto\n").upper()
 
-def parseOption(comando):
+def parseOption(query_set, comando):
     if comando == 'A':
-        query_A(getAsin())
+        query_set.query_A(getAsin())
     elif comando == 'B':
-        query_B(getAsin())
+        query_set.query_B(getAsin())
     elif comando == 'C':
-        query_C(getAsin())
+        query_set.query_C(getAsin())
     elif comando == 'D':
-        query_D()
+        query_set.query_D()
     elif comando == 'E':
-        query_E()
+        query_set.query_E()
     elif comando == 'F':
-        query_F()
+        query_set.query_F()
     elif comando == 'G':
-        query_G()
+        query_set.query_G()
     elif comando == 'H' or comando == "HELP" or comando == "AJUDA":
         printHelp()
     elif comando == 'Q' or comando == "S" or comando == "EXIT" or comando == "SAIR":

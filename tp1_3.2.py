@@ -1,18 +1,23 @@
 from database_config import *
+import configparser
 
 def main():
-    #Criar a database     
-    teste = create_connection()
-    create_database(teste,"teste1")
+    config = configparser.ConfigParser()
+    config.read('db_config.ini')
 
-    #Criar as tabelas
-    teste = create_connection(False,"teste1")
-    create_tables(teste)
+    database_name = config['database']['dbname']
+    products_file = config['database']['fname']
 
-    #Ler o arquivo de entrada e povoar as tabelas
-    teste = create_connection(False,"teste1")
-    products = parse_products("amazon-meta-sample.txt")
-    insert_data(teste, products)
+    # Criar a database     
+    conexao = create_connection()
+    create_database(conexao, database_name)
+
+    # Criar as tabelas
+    create_tables(create_connection(False, database_name))
+
+    # Ler o arquivo de entrada e povoar as tabelas
+    products = parse_products(products_file)
+    insert_data(create_connection(False, database_name), products)
 
 if __name__ == '__main__':
     main()
