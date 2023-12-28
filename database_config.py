@@ -103,9 +103,9 @@ def insert_data(connection, products):
                 actual_product_insert = [(actual_product['asin'],actual_product['similar'][i])]
                 execute_values(cursor, SQLC.INSERE_PRODUTO_SIMILAR,actual_product_insert, page_size=10)
 
-            #Insere as avaliações e seus dados atrelados    
+            #Insere as avaliações e seus dados atrelados   
             for i in range(len(actual_product['reviews'])):
-                actual_product_insert = [(i,actual_product['asin'],actual_product['reviews'][i]['customer'],actual_product['reviews'][i]['date'],actual_product['reviews'][i]['rating'],actual_product['reviews'][i]['votes'],actual_product['reviews'][i]['helpful'])]
+                actual_product_insert = [(actual_product['asin'],actual_product['reviews'][i]['customer'],actual_product['reviews'][i]['date'],actual_product['reviews'][i]['rating'],actual_product['reviews'][i]['votes'],actual_product['reviews'][i]['helpful'])]
                 execute_values(cursor, SQLC.INSERE_AVALIACOES,actual_product_insert, page_size=10000) 
                 
         return SUCESSO_CRIAR_BANCO

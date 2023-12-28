@@ -38,14 +38,14 @@ class SQLC:
     """
 
     TABELA_AVALIACOES = """CREATE TABLE IF NOT EXISTS avaliacoes (
-        avaliacao_id integer NOT NULL,
+        avaliacao_id SERIAL NOT NULL,
         asin character varying(15) NOT NULL,
         id_usuario character varying(15) NOT NULL,
         data date NOT NULL,
         nota integer NOT NULL,
         votos integer NOT NULL,
         votos_util integer NOT NULL,
-        PRIMARY KEY (avaliacao_id, asin, id_usuario),
+        PRIMARY KEY (avaliacao_id),
         FOREIGN KEY (asin) REFERENCES produto(asin) ON DELETE CASCADE
     );
     """
@@ -56,7 +56,7 @@ class SQLC:
 
     INSERE_CATEGORIAS = """INSERT INTO categorias(categoria_id, categoria_nome) VALUES (%s,%s);"""
 
-    INSERE_AVALIACOES = """INSERT INTO avaliacoes(avaliacao_id, asin, id_usuario, data,nota, votos, votos_util) VALUES %s;"""
+    INSERE_AVALIACOES = """INSERT INTO avaliacoes(asin, id_usuario, data,nota, votos, votos_util) VALUES %s;"""
 
     INSERE_PRODUTO = """INSERT INTO produto(asin, titulo, grupo, rank_vendas) VALUES %s;"""
 
